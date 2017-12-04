@@ -3,7 +3,9 @@ Three common ways to deal with dual stack networks on openwrt, including ebtable
 
 ## Usage
 Copy them to anywhere you want on the router. Run one of the `.sh` file after booting, or add it to `rc.local`.
+
 Each `.sh` file among the three will disable the other two automatically when called with `---.sh enable`.
+
 Check the code for more details.
 
 ## ebtables
