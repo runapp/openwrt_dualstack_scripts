@@ -1,0 +1,25 @@
+if test -e /etc/ebt6_enable -a ! -e /dev/ipv6bridge  ; then
+
+  WAN6_NAME="wan6"
+  LAN_NAME="lan"
+
+  logger -t EBT6 "Setting up EBTABLES6"
+
+  WAN6_INTERFACE=$(uci get "network.$WAN6_NAME.ifname")
+  if [ -z "$WAN6_INTERFACE" ] || [ ! -e "/sys/class/net/$WAN6_INTERFACE/" ] ; then
+    logger -t EBT6 "Fatal error: Lookup of $WAN6_NAME interface failed. Were the default interface names changed?" && exit 1
+  fi
+
+  LAN_INTERFACE=$(uci get "network.$LAN_NAME.ifname")
+  if [ -z "$LAN_INTERFACE" ] || [ ! -e "/sys/class/net/$LAN_INTERFACE/" ] ; then                                          
+    logger -t EBT6 "Fatal error: Lookup of $LAN_NAME interface failed. Were the default interface names changed?" && exit 1
+  fi
+
+  ebtables -A FORWARD -o $WAN6_INTERFACE -p ! ipv6 -j DROP
+  ebtables -t broute -A BROUTING -i $WAN6_INTERFACE -p ! ipv6 -j DROP
+  echo 1 > /proc/sys/net/ipv6/conf/all/forwarding
+  brctl addif br-lan $WAN6_INTERFACE
+  touch /dev/ipv6bridge
+
+fi
+
