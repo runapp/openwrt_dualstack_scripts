@@ -2,6 +2,11 @@
 
 ROOT=/root
 
+if test ! -e /etc/init.d/nat6; then
+  cp nat6 /etc/init.d/nat6
+  chmod 755 /etc/init.d/nat6
+fi
+
 if test x"$1" == x"enable"; then
   $ROOT/ebt6.sh disable
   $ROOT/odh6.sh disable
